@@ -371,7 +371,7 @@ If users need the ability to choose an option by typing in an input and filterin
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: GeneratedDocGen;
   };

@@ -350,7 +350,7 @@ Toast provides feedback on an interaction. Toasts appear at the bottom of a desk
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: GeneratedDocGen;
   };

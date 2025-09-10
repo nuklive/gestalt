@@ -211,7 +211,7 @@ export default function DividerPage({ generatedDocGen }: { generatedDocGen: DocG
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

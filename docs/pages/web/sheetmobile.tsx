@@ -393,7 +393,7 @@ OverlayPanels are surfaces that allow users to view optional information or comp
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: GeneratedDocGen;
   };

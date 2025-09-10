@@ -342,7 +342,7 @@ If users need the ability to choose between a yes/no option, use Checkbox.
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: {
       [key: string]: DocGen;

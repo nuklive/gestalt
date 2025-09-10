@@ -206,7 +206,7 @@ IconButtonFloating is commonly paired with Dropdown to display a menu of options
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

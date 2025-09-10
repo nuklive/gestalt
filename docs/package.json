@@ -9,6 +9,8 @@
     "dev-metadata": "nodemon -w ../packages/gestalt/src -w ../packages/gestalt-charts/src -w ../packages/gestalt-datepicker/src --exec 'yarn build-metadata'",
     "build": "yarn build-metadata && next build",
     "build-metadata": "../scripts/generateMetadata.js",
+    "export": "yarn build-metadata && next build && next export",
+    "serve": "serve out -p 3000",
     "start": "next start"
   },
   "dependencies": {

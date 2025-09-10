@@ -348,7 +348,7 @@ export default function ModalAlertPage({ generatedDocGen }: { generatedDocGen: D
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

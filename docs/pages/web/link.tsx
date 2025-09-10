@@ -526,7 +526,7 @@ These components support link functionality themselves by setting \`role="link"\
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

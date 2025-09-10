@@ -456,7 +456,7 @@ Tooltip provides helpful information regarding an interactive UI element, typica
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

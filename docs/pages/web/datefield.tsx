@@ -316,7 +316,7 @@ Use DatePicker if the user is allowed to pick a date from a calendar popup.
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

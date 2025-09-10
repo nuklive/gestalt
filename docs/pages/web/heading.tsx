@@ -392,7 +392,7 @@ For certain specific situations, it is possible to use Heading without an access
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

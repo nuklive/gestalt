@@ -450,7 +450,7 @@ DatePicker is used when the user has to select a date.  Compared to DateField, D
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

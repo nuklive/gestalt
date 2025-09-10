@@ -163,7 +163,7 @@ For more information about autoplay, check the [MDN Web Docs: video](https://dev
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

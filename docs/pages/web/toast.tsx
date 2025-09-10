@@ -363,7 +363,7 @@ If  confirmation toast's text with more complex style is required, such as bold 
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

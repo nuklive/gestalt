@@ -155,7 +155,7 @@ Use TapAreaLink when a link is needed instead of an action.
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

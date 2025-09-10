@@ -367,7 +367,7 @@ Fieldset creates a fieldset and legend for a group of related form items, like [
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: GeneratedDocGen;
   };

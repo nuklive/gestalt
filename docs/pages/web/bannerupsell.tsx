@@ -350,7 +350,7 @@ If the \`message\` text requires more complex style, such as bold text or inline
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: GeneratedDocGen;
   };

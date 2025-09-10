@@ -1,10 +1,10 @@
 const path = require('path');
-const redirects = require('./redirects');
+// const redirects = require('./redirects'); // Commented out for static export
 
 const root = path.join(__dirname, '../');
-
 module.exports = {
   images: {
+    unoptimized: true, // Required for static export
     domains: [
       'paper-attachments.dropbox.com',
       'ibb.co',
@@ -16,8 +16,12 @@ module.exports = {
     ],
   },
   reactStrictMode: true,
-  redirects: async () => redirects,
-  serverRuntimeConfig: {
+  // Redirects moved to hosting provider (Vercel _redirects, Netlify _redirects, etc.)
+  // redirects: async () => redirects,
+
+  // Server runtime config not available in static export
+  // Use environment variables instead if needed
+  env: {
     DOCS_ROOT: __dirname,
     GESTALT_ROOT: root,
   },
@@ -59,4 +63,7 @@ module.exports = {
       poll: dev ? 500 : false,
     },
   }),
+  // Note: For Next.js 12, we use 'next export' command instead of output: 'export'
+  // output: 'export', // This option is only available in Next.js 13+
+  trailingSlash: true, // Required for static export to work properly
 };

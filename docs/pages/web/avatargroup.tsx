@@ -433,7 +433,7 @@ If AvatarGroup is used as a control button to show/hide Popover-component, we re
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

@@ -555,7 +555,7 @@ For a correct implementation, make sure the  ‘visually-hidden’ element is co
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

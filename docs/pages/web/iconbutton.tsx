@@ -392,7 +392,7 @@ It's most common to anchor Dropdown to [Button](/web/button) or IconButton.
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

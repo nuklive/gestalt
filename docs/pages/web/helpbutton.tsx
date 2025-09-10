@@ -122,7 +122,7 @@ HelpButton is a more specific component than IconButton. IconButton is preferabl
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: DocsType;
 }> {
   return {

@@ -235,7 +235,7 @@ TextArea allows for multiline text input, suitable for longer length text. Unles
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

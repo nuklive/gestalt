@@ -251,7 +251,7 @@ On mobile devices, the BannerOverlay should appear at the bottom of the screen. 
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

@@ -814,7 +814,7 @@ Tables show data that's more complex and granular.      `}
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: GeneratedDocGen;
   };

@@ -142,7 +142,7 @@ export default function TextPage({ generatedDocGen }: { generatedDocGen: DocGen 
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

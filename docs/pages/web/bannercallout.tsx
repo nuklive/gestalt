@@ -325,7 +325,7 @@ The \`message\` prop accepts either a string or [Text](/web/text). Use a string 
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

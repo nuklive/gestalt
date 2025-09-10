@@ -259,7 +259,7 @@ SegmentedControl is used to switch between views within a small area of content,
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

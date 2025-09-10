@@ -308,7 +308,7 @@ Use Fieldset to group related form items.
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

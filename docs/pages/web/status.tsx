@@ -230,7 +230,7 @@ Use BannerCallout to communicate page-level status, such as an error, and to pro
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

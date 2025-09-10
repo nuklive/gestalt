@@ -384,7 +384,7 @@ TileData enables users to select multiple categories to compare with each other 
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

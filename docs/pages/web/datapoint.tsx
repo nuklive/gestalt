@@ -253,7 +253,7 @@ Use Status in instances where information is more categorical or qualitative (su
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

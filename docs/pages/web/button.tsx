@@ -470,7 +470,7 @@ Tabs are intended for page-level navigation between multiple URLs.
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

@@ -313,7 +313,7 @@ Note: Use "underline" style with caution. It should be limited to links and it's
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

@@ -415,7 +415,7 @@ PageHeader doesn't depend on DeviceTypeProvider to display a mobile view; instea
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

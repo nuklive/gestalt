@@ -397,7 +397,7 @@ The first example shows an empty TextArea with \`maxLength\` set to 200 characte
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

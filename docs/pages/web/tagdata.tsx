@@ -243,7 +243,7 @@ Note that \`accessibilityRemoveIconLabel\` is optional as DefaultLabelProvider p
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

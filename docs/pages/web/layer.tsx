@@ -65,7 +65,7 @@ The example below shows using a \`FixedZIndex\` for the header zIndex and a \`Co
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

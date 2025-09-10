@@ -296,7 +296,7 @@ Toast provides temporary feedback on an interaction. Toasts appear at the bottom
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

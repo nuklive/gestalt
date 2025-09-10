@@ -137,7 +137,7 @@ Follow these guidelines for \`bgColor\`
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

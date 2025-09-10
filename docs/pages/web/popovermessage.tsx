@@ -244,7 +244,7 @@ Tooltip describes the function of an interactive element, typically [IconButton]
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

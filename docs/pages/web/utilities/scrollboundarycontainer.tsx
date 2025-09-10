@@ -110,7 +110,7 @@ The following example shows the internal ScrollBoundaryContainer in action. The 
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

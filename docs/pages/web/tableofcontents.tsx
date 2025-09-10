@@ -180,7 +180,7 @@ Tabs may be used navigate between multiple URLs. Tabs are intended as page-level
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: GeneratedDocGen;
   };

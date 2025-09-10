@@ -388,7 +388,7 @@ Spacing is already accounted for; simply specify the width and height.`}
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

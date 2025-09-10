@@ -332,7 +332,7 @@ If the input is used for searching content, use SearchField.
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

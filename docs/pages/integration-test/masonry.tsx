@@ -202,7 +202,7 @@ export default function TestPage({
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     randomNumberSeeds: ReadonlyArray<number>;
   };

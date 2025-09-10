@@ -647,7 +647,7 @@ For pages with a main top nav bar, every SideNav should have a PageHeader to ann
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: GeneratedDocGen;
   };

@@ -516,7 +516,7 @@ Use \`type\` when TextField needs to capture phone numbers, emails or URLs.
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

@@ -61,7 +61,7 @@ The example shows a component with different desktop and mobile UIs.`}
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

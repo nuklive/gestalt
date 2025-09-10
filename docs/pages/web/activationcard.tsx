@@ -83,7 +83,7 @@ export default function ActivationCardPage({ generatedDocGen }: { generatedDocGe
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

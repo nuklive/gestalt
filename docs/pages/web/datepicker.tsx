@@ -446,7 +446,7 @@ See [GlobalEventsHandlerProvider](/web/utilities/globaleventshandlerprovider#onR
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

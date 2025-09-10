@@ -149,7 +149,7 @@ export default function ColumnPage({ generatedDocGen }: { generatedDocGen: DocGe
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };

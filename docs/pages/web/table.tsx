@@ -582,7 +582,7 @@ Checkboxes are often used in tables to allow for selecting and editing of multip
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: GeneratedDocGen;
   };

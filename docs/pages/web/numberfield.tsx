@@ -407,7 +407,7 @@ Check [TextField's Label variant section](/web/numberfield#Labels) for more exam
   );
 }
 
-export async function getServerSideProps(): Promise<{
+export async function getStaticProps(): Promise<{
   props: {
     generatedDocGen: DocGen;
   };
