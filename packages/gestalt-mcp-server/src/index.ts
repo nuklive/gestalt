@@ -5,10 +5,15 @@
  *
  * Model Context Protocol server for Pinterest's Gestalt design system.
  * Provides access to component information, documentation, and search capabilities.
+ *
+ * Supports both stdio and HTTP/SSE transports:
+ * - stdio: For local clients like Claude Desktop and Claude CLI
+ * - HTTP: For remote access via URL
  */
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import {
   CallToolRequestSchema,
   ListResourcesRequestSchema,
@@ -23,6 +28,8 @@ import {
   searchComponents,
   type GestaltComponent,
 } from './component-data.js';
+import http from 'http';
+import { parse as parseUrl } from 'url';
 
 /**
  * MCP Server for Gestalt Design System
@@ -343,20 +350,90 @@ class GestaltMCPServer {
   }
 
   /**
-   * Start the MCP server
+   * Start the MCP server with stdio transport
    */
-  async start(): Promise<void> {
+  async startStdio(): Promise<void> {
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
 
     // Log to stderr since stdout is used for MCP communication
     console.error('Gestalt MCP Server running on stdio');
   }
+
+  /**
+   * Start the MCP server with HTTP/SSE transport
+   */
+  async startHttp(port: number = 3000): Promise<void> {
+    const httpServer = http.createServer(async (req, res) => {
+      const url = parseUrl(req.url || '', true);
+
+      // Enable CORS
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+      // Handle CORS preflight
+      if (req.method === 'OPTIONS') {
+        res.writeHead(200);
+        res.end();
+        return;
+      }
+
+      // Health check endpoint
+      if (url.pathname === '/health') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ status: 'ok', server: 'gestalt-mcp-server' }));
+        return;
+      }
+
+      // MCP endpoint
+      if (url.pathname === '/sse' || url.pathname === '/mcp') {
+        const transport = new SSEServerTransport(url.pathname, res);
+        await this.server.connect(transport);
+
+        // Handle connection close
+        req.on('close', () => {
+          console.error('Client disconnected');
+        });
+        return;
+      }
+
+      // Default response
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        error: 'Not found',
+        endpoints: {
+          sse: '/sse or /mcp - MCP Server-Sent Events endpoint',
+          health: '/health - Health check'
+        }
+      }));
+    });
+
+    httpServer.listen(port, () => {
+      console.error(`Gestalt MCP Server running on http://localhost:${port}`);
+      console.error(`MCP endpoint: http://localhost:${port}/sse`);
+      console.error(`Health check: http://localhost:${port}/health`);
+    });
+  }
 }
+
+// Parse command line arguments
+const args = process.argv.slice(2);
+const mode = args.find(arg => arg === '--http' || arg === '--stdio') || '--stdio';
+const portArg = args.find(arg => arg.startsWith('--port='));
+const port = portArg ? parseInt(portArg.split('=')[1]) : 3000;
 
 // Start the server
 const server = new GestaltMCPServer();
-server.start().catch((error) => {
-  console.error('Failed to start server:', error);
-  process.exit(1);
-});
+
+if (mode === '--http') {
+  server.startHttp(port).catch((error) => {
+    console.error('Failed to start HTTP server:', error);
+    process.exit(1);
+  });
+} else {
+  server.startStdio().catch((error) => {
+    console.error('Failed to start stdio server:', error);
+    process.exit(1);
+  });
+}

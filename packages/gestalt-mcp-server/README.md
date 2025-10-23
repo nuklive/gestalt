@@ -47,7 +47,14 @@ yarn build
 
 ## Usage
 
-### With Claude Desktop
+The Gestalt MCP Server supports two transport modes:
+
+1. **stdio** - For local clients (Claude Desktop, Claude CLI)
+2. **HTTP/SSE** - For remote access via URL
+
+### Mode 1: stdio (Local)
+
+#### With Claude Desktop
 
 Add the server to your Claude Desktop configuration file:
 
@@ -61,7 +68,8 @@ Add the server to your Claude Desktop configuration file:
     "gestalt": {
       "command": "node",
       "args": [
-        "/absolute/path/to/gestalt/packages/gestalt-mcp-server/dist/index.js"
+        "/absolute/path/to/gestalt/packages/gestalt-mcp-server/dist/index.js",
+        "--stdio"
       ]
     }
   }
@@ -70,13 +78,97 @@ Add the server to your Claude Desktop configuration file:
 
 After adding the configuration, restart Claude Desktop.
 
-### With Other MCP Clients
+#### With Claude CLI (Claude Code)
 
-The server uses stdio transport and can be used with any MCP-compatible client:
+Add to your project's `.mcp.json` or `~/.claude.json`:
+
+```json
+{
+  "mcpServers": {
+    "gestalt": {
+      "command": "node",
+      "args": [
+        "/absolute/path/to/gestalt/packages/gestalt-mcp-server/dist/index.js",
+        "--stdio"
+      ]
+    }
+  }
+}
+```
+
+Or use the CLI command:
+```bash
+claude mcp add gestalt --scope user
+```
+
+#### With Other MCP Clients (stdio)
 
 ```bash
-node dist/index.js
+# Run in stdio mode (default)
+yarn start
+# or
+yarn start:stdio
+# or
+node dist/index.js --stdio
 ```
+
+### Mode 2: HTTP/SSE (Remote)
+
+Run the server as an HTTP service that can be accessed via URL:
+
+```bash
+# Start HTTP server on default port 3000
+yarn start:http
+
+# Or specify a custom port
+node dist/index.js --http --port=8080
+```
+
+The server will start and display:
+```
+Gestalt MCP Server running on http://localhost:3000
+MCP endpoint: http://localhost:3000/sse
+Health check: http://localhost:3000/health
+```
+
+#### Connecting to HTTP Server
+
+**In Claude Desktop** - Add to configuration:
+
+```json
+{
+  "mcpServers": {
+    "gestalt": {
+      "url": "http://localhost:3000/sse"
+    }
+  }
+}
+```
+
+**In Claude CLI** - Add to `.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "gestalt": {
+      "url": "http://localhost:3000/sse"
+    }
+  }
+}
+```
+
+**Health Check**:
+```bash
+curl http://localhost:3000/health
+# Response: {"status":"ok","server":"gestalt-mcp-server"}
+```
+
+#### Advantages of HTTP Mode
+
+- **Remote Access**: Access from any machine on the network
+- **Multiple Clients**: Multiple clients can connect simultaneously
+- **Deployment**: Can be deployed as a service/container
+- **Testing**: Easier to test with curl and browser tools
 
 ## Component Data
 
