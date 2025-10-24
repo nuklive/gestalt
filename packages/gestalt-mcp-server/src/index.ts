@@ -366,8 +366,13 @@ class GestaltMCPServer {
   async startHttp(port: number = 3000): Promise<void> {
     const app = express();
 
-    // Store transports by session ID for session management
-    const transports = new Map<string, StreamableHTTPServerTransport>();
+    // Create a single transport instance that handles all sessions
+    const transport = new StreamableHTTPServerTransport({
+      sessionIdGenerator: () => randomUUID(),
+    });
+
+    // Connect the transport to the MCP server once
+    await this.server.connect(transport);
 
     // CORS middleware (before body parsing)
     app.use((req, res, next) => {
@@ -397,53 +402,20 @@ class GestaltMCPServer {
         status: 'ok',
         server: 'gestalt-mcp-server',
         version: '1.0.0',
-        transport: 'streamable-http',
-        activeSessions: transports.size
+        transport: 'streamable-http'
       });
     });
 
     // MCP endpoint using Streamable HTTP transport
     app.post('/mcp', async (req: Request, res: Response) => {
       try {
-        const sessionId = req.headers['mcp-session-id'] as string | undefined;
-
-        let transport: StreamableHTTPServerTransport;
-
-        if (sessionId && transports.has(sessionId)) {
-          // Reuse existing transport for this session
-          transport = transports.get(sessionId)!;
-        } else {
-          // Create new transport for new session with session ID generator
-          transport = new StreamableHTTPServerTransport({
-            sessionIdGenerator: () => randomUUID(),
-          });
-
-          await this.server.connect(transport);
-
-          // Store transport if session ID is provided
-          if (sessionId) {
-            transports.set(sessionId, transport);
-          }
-        }
-
+        // The single transport instance handles all requests and manages sessions internally
         await transport.handleRequest(req, res);
       } catch (error) {
         console.error('Error handling MCP request:', error);
         if (!res.headersSent) {
           res.status(500).json({ error: 'Internal server error' });
         }
-      }
-    });
-
-    // Session cleanup endpoint
-    app.delete('/mcp', (req: Request, res: Response) => {
-      const sessionId = req.headers['mcp-session-id'] as string | undefined;
-
-      if (sessionId && transports.has(sessionId)) {
-        transports.delete(sessionId);
-        res.json({ message: 'Session terminated', sessionId });
-      } else {
-        res.status(404).json({ error: 'Session not found' });
       }
     });
 
@@ -455,9 +427,8 @@ class GestaltMCPServer {
         protocol: 'Model Context Protocol',
         transport: 'Streamable HTTP',
         endpoints: {
-          mcp: 'POST /mcp - MCP protocol endpoint (requires mcp-session-id header)',
-          health: 'GET /health - Health check',
-          terminate: 'DELETE /mcp - Terminate session (requires mcp-session-id header)'
+          mcp: 'POST /mcp - MCP protocol endpoint',
+          health: 'GET /health - Health check'
         },
         documentation: 'https://github.com/pinterest/gestalt'
       });

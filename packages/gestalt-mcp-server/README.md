@@ -172,8 +172,7 @@ Response:
   "status": "ok",
   "server": "gestalt-mcp-server",
   "version": "1.0.0",
-  "transport": "streamable-http",
-  "activeSessions": 0
+  "transport": "streamable-http"
 }
 ```
 
@@ -189,9 +188,8 @@ Response:
   "protocol": "Model Context Protocol",
   "transport": "Streamable HTTP",
   "endpoints": {
-    "mcp": "POST /mcp - MCP protocol endpoint (requires mcp-session-id header)",
-    "health": "GET /health - Health check",
-    "terminate": "DELETE /mcp - Terminate session (requires mcp-session-id header)"
+    "mcp": "POST /mcp - MCP protocol endpoint",
+    "health": "GET /health - Health check"
   },
   "documentation": "https://github.com/pinterest/gestalt"
 }
@@ -199,24 +197,22 @@ Response:
 
 #### Session Management
 
-The Streamable HTTP transport uses session management to maintain state across multiple requests:
+The Streamable HTTP transport automatically handles session management:
 
-- Each MCP client connection is assigned a unique `mcp-session-id`
-- The server stores transport instances per session for efficient request handling
-- Clients must include the `mcp-session-id` header in subsequent requests
-- Sessions can be terminated with `DELETE /mcp` with the session ID header
-- Active session count is visible in the `/health` endpoint
+- Each MCP client connection is assigned a unique `mcp-session-id` by the transport
+- The transport internally manages session state across multiple requests
+- Clients automatically include the `mcp-session-id` header in subsequent requests
+- Session lifecycle is handled transparently by the MCP SDK
 
 #### Advantages of Streamable HTTP Mode
 
 - **Remote Access**: Access from any machine on the network
-- **Multiple Clients**: Multiple clients can connect simultaneously with session isolation
-- **Session Management**: Efficient state management with session IDs
+- **Multiple Clients**: Multiple clients can connect simultaneously with automatic session isolation
+- **Automatic Session Management**: Transport handles all session complexity internally
 - **Deployment**: Can be deployed as a service/container (Docker, Kubernetes)
 - **Load Balancing**: Compatible with standard HTTP load balancers (with sticky sessions)
 - **Testing**: Easier to test with curl, Postman, and browser tools
 - **Firewalls**: Works through standard HTTP ports
-- **Monitoring**: Track active sessions via health endpoint
 
 ## Component Data
 
