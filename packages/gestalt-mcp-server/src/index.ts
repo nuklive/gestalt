@@ -404,9 +404,7 @@ class GestaltMCPServer {
           transport = transports.get(sessionId)!;
         } else {
           // Create new transport for new session
-          transport = new StreamableHTTPServerTransport({
-            sessionIdHeader: 'mcp-session-id',
-          });
+          transport = new StreamableHTTPServerTransport();
 
           await this.server.connect(transport);
 
