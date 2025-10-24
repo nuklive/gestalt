@@ -50,7 +50,7 @@ yarn build
 The Gestalt MCP Server supports two transport modes:
 
 1. **stdio** - For local clients (Claude Desktop, Claude CLI)
-2. **HTTP/SSE** - For remote access via URL
+2. **Streamable HTTP** - For remote access via URL
 
 ### Mode 1: stdio (Local)
 
@@ -112,7 +112,7 @@ yarn start:stdio
 node dist/index.js --stdio
 ```
 
-### Mode 2: HTTP/SSE (Remote)
+### Mode 2: Streamable HTTP (Remote)
 
 Run the server as an HTTP service that can be accessed via URL:
 
@@ -127,8 +127,9 @@ node dist/index.js --http --port=8080
 The server will start and display:
 ```
 Gestalt MCP Server running on http://localhost:3000
-MCP endpoint: http://localhost:3000/sse
-Health check: http://localhost:3000/health
+MCP endpoint: POST http://localhost:3000/mcp
+Health check: GET http://localhost:3000/health
+Transport: Streamable HTTP
 ```
 
 #### Connecting to HTTP Server
@@ -139,7 +140,8 @@ Health check: http://localhost:3000/health
 {
   "mcpServers": {
     "gestalt": {
-      "url": "http://localhost:3000/sse"
+      "url": "http://localhost:3000/mcp",
+      "transport": "streamable-http"
     }
   }
 }
@@ -151,24 +153,57 @@ Health check: http://localhost:3000/health
 {
   "mcpServers": {
     "gestalt": {
-      "url": "http://localhost:3000/sse"
+      "url": "http://localhost:3000/mcp",
+      "transport": "streamable-http"
     }
   }
 }
 ```
 
+#### Testing the Server
+
 **Health Check**:
 ```bash
 curl http://localhost:3000/health
-# Response: {"status":"ok","server":"gestalt-mcp-server"}
+```
+Response:
+```json
+{
+  "status": "ok",
+  "server": "gestalt-mcp-server",
+  "version": "1.0.0",
+  "transport": "streamable-http"
+}
 ```
 
-#### Advantages of HTTP Mode
+**Server Info**:
+```bash
+curl http://localhost:3000/
+```
+Response:
+```json
+{
+  "name": "Gestalt MCP Server",
+  "version": "1.0.0",
+  "protocol": "Model Context Protocol",
+  "transport": "Streamable HTTP",
+  "endpoints": {
+    "mcp": "POST /mcp - MCP protocol endpoint",
+    "health": "GET /health - Health check"
+  },
+  "documentation": "https://github.com/pinterest/gestalt"
+}
+```
+
+#### Advantages of Streamable HTTP Mode
 
 - **Remote Access**: Access from any machine on the network
 - **Multiple Clients**: Multiple clients can connect simultaneously
-- **Deployment**: Can be deployed as a service/container
-- **Testing**: Easier to test with curl and browser tools
+- **Stateless**: Better scalability with stateless HTTP requests
+- **Deployment**: Can be deployed as a service/container (Docker, Kubernetes)
+- **Load Balancing**: Compatible with standard HTTP load balancers
+- **Testing**: Easier to test with curl, Postman, and browser tools
+- **Firewalls**: Works through standard HTTP ports
 
 ## Component Data
 
@@ -247,10 +282,11 @@ gestalt-mcp-server/
 ## Technical Details
 
 - **Protocol**: Model Context Protocol (MCP)
-- **Transport**: stdio
+- **Transports**: stdio (local) and Streamable HTTP (remote)
 - **Runtime**: Node.js
 - **Language**: TypeScript
 - **SDK**: @modelcontextprotocol/sdk
+- **HTTP Framework**: Express.js (for Streamable HTTP mode)
 
 ## Resources
 

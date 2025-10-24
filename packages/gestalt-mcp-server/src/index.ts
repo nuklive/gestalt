@@ -6,14 +6,13 @@
  * Model Context Protocol server for Pinterest's Gestalt design system.
  * Provides access to component information, documentation, and search capabilities.
  *
- * Supports both stdio and HTTP/SSE transports:
+ * Supports both stdio and Streamable HTTP transports:
  * - stdio: For local clients like Claude Desktop and Claude CLI
- * - HTTP: For remote access via URL
+ * - HTTP: For remote access via URL using Streamable HTTP protocol
  */
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import {
   CallToolRequestSchema,
   ListResourcesRequestSchema,
@@ -28,8 +27,8 @@ import {
   searchComponents,
   type GestaltComponent,
 } from './component-data.js';
-import http from 'http';
-import { parse as parseUrl } from 'url';
+import express, { Request, Response } from 'express';
+import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamable-http.js';
 
 /**
  * MCP Server for Gestalt Design System
@@ -361,58 +360,64 @@ class GestaltMCPServer {
   }
 
   /**
-   * Start the MCP server with HTTP/SSE transport
+   * Start the MCP server with Streamable HTTP transport
    */
   async startHttp(port: number = 3000): Promise<void> {
-    const httpServer = http.createServer(async (req, res) => {
-      const url = parseUrl(req.url || '', true);
+    const app = express();
 
-      // Enable CORS
+    // Enable JSON parsing and CORS
+    app.use(express.json());
+    app.use((req, res, next) => {
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
       res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-      // Handle CORS preflight
       if (req.method === 'OPTIONS') {
-        res.writeHead(200);
-        res.end();
+        res.sendStatus(200);
         return;
       }
-
-      // Health check endpoint
-      if (url.pathname === '/health') {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ status: 'ok', server: 'gestalt-mcp-server' }));
-        return;
-      }
-
-      // MCP endpoint
-      if (url.pathname === '/sse' || url.pathname === '/mcp') {
-        const transport = new SSEServerTransport(url.pathname, res);
-        await this.server.connect(transport);
-
-        // Handle connection close
-        req.on('close', () => {
-          console.error('Client disconnected');
-        });
-        return;
-      }
-
-      // Default response
-      res.writeHead(404, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({
-        error: 'Not found',
-        endpoints: {
-          sse: '/sse or /mcp - MCP Server-Sent Events endpoint',
-          health: '/health - Health check'
-        }
-      }));
+      next();
     });
 
-    httpServer.listen(port, () => {
+    // Health check endpoint
+    app.get('/health', (req: Request, res: Response) => {
+      res.json({
+        status: 'ok',
+        server: 'gestalt-mcp-server',
+        version: '1.0.0',
+        transport: 'streamable-http'
+      });
+    });
+
+    // MCP endpoint using Streamable HTTP transport
+    app.post('/mcp', async (req: Request, res: Response) => {
+      const transport = new StreamableHTTPServerTransport({
+        sessionIdHeader: 'mcp-session-id',
+      });
+
+      await this.server.connect(transport);
+      await transport.handleRequest(req, res);
+    });
+
+    // Root endpoint with API info
+    app.get('/', (req: Request, res: Response) => {
+      res.json({
+        name: 'Gestalt MCP Server',
+        version: '1.0.0',
+        protocol: 'Model Context Protocol',
+        transport: 'Streamable HTTP',
+        endpoints: {
+          mcp: 'POST /mcp - MCP protocol endpoint',
+          health: 'GET /health - Health check'
+        },
+        documentation: 'https://github.com/pinterest/gestalt'
+      });
+    });
+
+    app.listen(port, () => {
       console.error(`Gestalt MCP Server running on http://localhost:${port}`);
-      console.error(`MCP endpoint: http://localhost:${port}/sse`);
-      console.error(`Health check: http://localhost:${port}/health`);
+      console.error(`MCP endpoint: POST http://localhost:${port}/mcp`);
+      console.error(`Health check: GET http://localhost:${port}/health`);
+      console.error(`Transport: Streamable HTTP`);
     });
   }
 }
