@@ -29,6 +29,7 @@ import {
 } from './component-data.js';
 import express, { Request, Response } from 'express';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
+import { randomUUID } from 'crypto';
 
 /**
  * MCP Server for Gestalt Design System
@@ -403,8 +404,10 @@ class GestaltMCPServer {
           // Reuse existing transport for this session
           transport = transports.get(sessionId)!;
         } else {
-          // Create new transport for new session
-          transport = new StreamableHTTPServerTransport();
+          // Create new transport for new session with session ID generator
+          transport = new StreamableHTTPServerTransport({
+            sessionIdGenerator: () => randomUUID(),
+          });
 
           await this.server.connect(transport);
 
