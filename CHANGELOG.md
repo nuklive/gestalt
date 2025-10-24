@@ -1,3 +1,21 @@
+## 177.0.3 (Oct 22, 2025)
+
+### Patch
+
+- Docs: Remove design contribution page ([#4091](https://github.com/pinterest/gestalt/pull/4091)) - [Preview link](https://deploy-preview-4091--gestalt.netlify.app?devexample=true)
+
+## 177.0.2 (Oct 22, 2025)
+
+### Patch
+
+- Docs: Remove link button from Home page ([#4088](https://github.com/pinterest/gestalt/pull/4088)) - [Preview link](https://deploy-preview-4088--gestalt.netlify.app?devexample=true)
+
+## 177.0.1 (Oct 2, 2025)
+
+### Patch
+
+- Internal: Add support for dynamic basePath and trailingSlash in Next.js config ([#4085](https://github.com/pinterest/gestalt/pull/4085)) - [Preview link](https://deploy-preview-4085--gestalt.netlify.app?devexample=true)
+
 ## 177.0.0 (Apr 10, 2025)
 
 ### Major
