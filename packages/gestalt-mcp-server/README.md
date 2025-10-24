@@ -117,22 +117,35 @@ node dist/index.js --stdio
 Run the server as an HTTP service that can be accessed via URL:
 
 ```bash
-# Start HTTP server on default port 3000
+# Start HTTP server on default port 8000
 yarn start:http
 
 # Or specify a custom port
-node dist/index.js --http --port=8080
+node dist/index.js --http --port=8000
 ```
 
 The server will start and display:
 ```
-Gestalt MCP Server running on http://localhost:3000
-MCP endpoint: POST http://localhost:3000/mcp
-Health check: GET http://localhost:3000/health
+Gestalt MCP Server running on http://localhost:8000
+MCP endpoint: POST http://localhost:8000/mcp
+Health check: GET http://localhost:8000/health
 Transport: Streamable HTTP
 ```
 
 #### Connecting to HTTP Server
+
+** In Cursor - Add to ~/.cursor/mcp.json **
+
+```
+{
+  "mcpServers": {
+    "gestalt": {
+      "url": "http://localhost:8000",
+      "transport": "streamable-http"
+}
+}
+}
+```
 
 **In Claude Desktop** - Add to configuration:
 
@@ -140,7 +153,7 @@ Transport: Streamable HTTP
 {
   "mcpServers": {
     "gestalt": {
-      "url": "http://localhost:3000/mcp",
+      "url": "http://localhost:8000/mcp",
       "transport": "streamable-http"
     }
   }
@@ -153,18 +166,19 @@ Transport: Streamable HTTP
 {
   "mcpServers": {
     "gestalt": {
-      "url": "http://localhost:3000/mcp",
+      "url": "http://localhost:8000/mcp",
       "transport": "streamable-http"
     }
   }
 }
 ```
 
+
 #### Testing the Server
 
 **Health Check**:
 ```bash
-curl http://localhost:3000/health
+curl http://localhost:8000/health
 ```
 Response:
 ```json
@@ -178,7 +192,7 @@ Response:
 
 **Server Info**:
 ```bash
-curl http://localhost:3000/
+curl http://localhost:8000/
 ```
 Response:
 ```json

@@ -363,7 +363,7 @@ class GestaltMCPServer {
   /**
    * Start the MCP server with Streamable HTTP transport
    */
-  async startHttp(port: number = 3000): Promise<void> {
+  async startHttp(port: number = 8000): Promise<void> {
     const app = express();
 
     // Create a single transport instance that handles all sessions
@@ -447,7 +447,7 @@ class GestaltMCPServer {
 const args = process.argv.slice(2);
 const mode = args.find(arg => arg === '--http' || arg === '--stdio') || '--stdio';
 const portArg = args.find(arg => arg.startsWith('--port='));
-const port = portArg ? parseInt(portArg.split('=')[1]) : 3000;
+const port = portArg ? parseInt(portArg.split('=')[1]) : 8000;
 
 // Start the server
 const server = new GestaltMCPServer();
