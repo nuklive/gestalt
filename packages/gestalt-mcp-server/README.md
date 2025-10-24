@@ -172,7 +172,8 @@ Response:
   "status": "ok",
   "server": "gestalt-mcp-server",
   "version": "1.0.0",
-  "transport": "streamable-http"
+  "transport": "streamable-http",
+  "activeSessions": 0
 }
 ```
 
@@ -188,22 +189,34 @@ Response:
   "protocol": "Model Context Protocol",
   "transport": "Streamable HTTP",
   "endpoints": {
-    "mcp": "POST /mcp - MCP protocol endpoint",
-    "health": "GET /health - Health check"
+    "mcp": "POST /mcp - MCP protocol endpoint (requires mcp-session-id header)",
+    "health": "GET /health - Health check",
+    "terminate": "DELETE /mcp - Terminate session (requires mcp-session-id header)"
   },
   "documentation": "https://github.com/pinterest/gestalt"
 }
 ```
 
+#### Session Management
+
+The Streamable HTTP transport uses session management to maintain state across multiple requests:
+
+- Each MCP client connection is assigned a unique `mcp-session-id`
+- The server stores transport instances per session for efficient request handling
+- Clients must include the `mcp-session-id` header in subsequent requests
+- Sessions can be terminated with `DELETE /mcp` with the session ID header
+- Active session count is visible in the `/health` endpoint
+
 #### Advantages of Streamable HTTP Mode
 
 - **Remote Access**: Access from any machine on the network
-- **Multiple Clients**: Multiple clients can connect simultaneously
-- **Stateless**: Better scalability with stateless HTTP requests
+- **Multiple Clients**: Multiple clients can connect simultaneously with session isolation
+- **Session Management**: Efficient state management with session IDs
 - **Deployment**: Can be deployed as a service/container (Docker, Kubernetes)
-- **Load Balancing**: Compatible with standard HTTP load balancers
+- **Load Balancing**: Compatible with standard HTTP load balancers (with sticky sessions)
 - **Testing**: Easier to test with curl, Postman, and browser tools
 - **Firewalls**: Works through standard HTTP ports
+- **Monitoring**: Track active sessions via health endpoint
 
 ## Component Data
 

@@ -28,7 +28,7 @@ import {
   type GestaltComponent,
 } from './component-data.js';
 import express, { Request, Response } from 'express';
-import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamable-http.js';
+import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 
 /**
  * MCP Server for Gestalt Design System
@@ -365,12 +365,15 @@ class GestaltMCPServer {
   async startHttp(port: number = 3000): Promise<void> {
     const app = express();
 
+    // Store transports by session ID for session management
+    const transports = new Map<string, StreamableHTTPServerTransport>();
+
     // Enable JSON parsing and CORS
     app.use(express.json());
     app.use((req, res, next) => {
       res.setHeader('Access-Control-Allow-Origin', '*');
-      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, mcp-session-id');
       if (req.method === 'OPTIONS') {
         res.sendStatus(200);
         return;
@@ -384,18 +387,54 @@ class GestaltMCPServer {
         status: 'ok',
         server: 'gestalt-mcp-server',
         version: '1.0.0',
-        transport: 'streamable-http'
+        transport: 'streamable-http',
+        activeSessions: transports.size
       });
     });
 
     // MCP endpoint using Streamable HTTP transport
     app.post('/mcp', async (req: Request, res: Response) => {
-      const transport = new StreamableHTTPServerTransport({
-        sessionIdHeader: 'mcp-session-id',
-      });
+      try {
+        const sessionId = req.headers['mcp-session-id'] as string | undefined;
 
-      await this.server.connect(transport);
-      await transport.handleRequest(req, res);
+        let transport: StreamableHTTPServerTransport;
+
+        if (sessionId && transports.has(sessionId)) {
+          // Reuse existing transport for this session
+          transport = transports.get(sessionId)!;
+        } else {
+          // Create new transport for new session
+          transport = new StreamableHTTPServerTransport({
+            sessionIdHeader: 'mcp-session-id',
+          });
+
+          await this.server.connect(transport);
+
+          // Store transport if session ID is provided
+          if (sessionId) {
+            transports.set(sessionId, transport);
+          }
+        }
+
+        await transport.handleRequest(req, res);
+      } catch (error) {
+        console.error('Error handling MCP request:', error);
+        if (!res.headersSent) {
+          res.status(500).json({ error: 'Internal server error' });
+        }
+      }
+    });
+
+    // Session cleanup endpoint
+    app.delete('/mcp', (req: Request, res: Response) => {
+      const sessionId = req.headers['mcp-session-id'] as string | undefined;
+
+      if (sessionId && transports.has(sessionId)) {
+        transports.delete(sessionId);
+        res.json({ message: 'Session terminated', sessionId });
+      } else {
+        res.status(404).json({ error: 'Session not found' });
+      }
     });
 
     // Root endpoint with API info
@@ -406,8 +445,9 @@ class GestaltMCPServer {
         protocol: 'Model Context Protocol',
         transport: 'Streamable HTTP',
         endpoints: {
-          mcp: 'POST /mcp - MCP protocol endpoint',
-          health: 'GET /health - Health check'
+          mcp: 'POST /mcp - MCP protocol endpoint (requires mcp-session-id header)',
+          health: 'GET /health - Health check',
+          terminate: 'DELETE /mcp - Terminate session (requires mcp-session-id header)'
         },
         documentation: 'https://github.com/pinterest/gestalt'
       });
