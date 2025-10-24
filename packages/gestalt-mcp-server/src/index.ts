@@ -369,8 +369,7 @@ class GestaltMCPServer {
     // Store transports by session ID for session management
     const transports = new Map<string, StreamableHTTPServerTransport>();
 
-    // Enable JSON parsing and CORS
-    app.use(express.json());
+    // CORS middleware (before body parsing)
     app.use((req, res, next) => {
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
@@ -380,6 +379,16 @@ class GestaltMCPServer {
         return;
       }
       next();
+    });
+
+    // Enable JSON parsing ONLY for non-MCP endpoints
+    app.use((req, res, next) => {
+      if (req.path === '/mcp') {
+        // Skip JSON parsing for MCP endpoint - transport needs raw stream
+        next();
+      } else {
+        express.json()(req, res, next);
+      }
     });
 
     // Health check endpoint
