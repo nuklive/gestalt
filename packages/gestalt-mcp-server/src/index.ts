@@ -386,10 +386,12 @@ class GestaltMCPServer {
       next();
     });
 
-    // Enable JSON parsing ONLY for non-MCP endpoints
+    // Enable JSON parsing ONLY for non-MCP endpoints and non-root transport path
     app.use((req, res, next) => {
-      if (req.path === '/mcp') {
-        // Skip JSON parsing for MCP endpoint - transport needs raw stream
+      const isMcpLikePath =
+        req.path === '/mcp' || req.path.startsWith('/mcp/') || req.path === '/';
+      if (isMcpLikePath) {
+        // Skip JSON parsing for MCP endpoints - transport needs raw stream
         next();
       } else {
         express.json()(req, res, next);
@@ -406,8 +408,10 @@ class GestaltMCPServer {
       });
     });
 
-    // MCP endpoint using Streamable HTTP transport
-    app.post('/mcp', async (req: Request, res: Response) => {
+    // MCP endpoints using Streamable HTTP transport
+    // Support both base URL and '/mcp' (and subpaths) to be compatible with clients
+    // that pass either the root service URL or an explicit '/mcp' path.
+    const handleMcp = async (req: Request, res: Response) => {
       try {
         // The single transport instance handles all requests and manages sessions internally
         await transport.handleRequest(req, res);
@@ -417,17 +421,21 @@ class GestaltMCPServer {
           res.status(500).json({ error: 'Internal server error' });
         }
       }
-    });
+    };
 
-    // Root endpoint with API info
-    app.get('/', (req: Request, res: Response) => {
+    app.all('/mcp', handleMcp);
+    app.all('/mcp/*', handleMcp);
+    app.all('/', handleMcp);
+
+    // Server info endpoint (moved off '/' to avoid transport conflicts)
+    app.get('/info', (req: Request, res: Response) => {
       res.json({
         name: 'Gestalt MCP Server',
         version: '1.0.0',
         protocol: 'Model Context Protocol',
         transport: 'Streamable HTTP',
         endpoints: {
-          mcp: 'POST /mcp - MCP protocol endpoint',
+          mcp: 'ALL / or /mcp - MCP protocol endpoint',
           health: 'GET /health - Health check'
         },
         documentation: 'https://github.com/pinterest/gestalt'
@@ -436,8 +444,9 @@ class GestaltMCPServer {
 
     app.listen(port, () => {
       console.error(`Gestalt MCP Server running on http://localhost:${port}`);
-      console.error(`MCP endpoint: POST http://localhost:${port}/mcp`);
+      console.error(`MCP endpoints: ALL http://localhost:${port}/ and /mcp`);
       console.error(`Health check: GET http://localhost:${port}/health`);
+      console.error(`Server info:   GET http://localhost:${port}/info`);
       console.error(`Transport: Streamable HTTP`);
     });
   }

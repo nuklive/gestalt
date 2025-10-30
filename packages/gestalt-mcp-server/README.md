@@ -97,6 +97,7 @@ Add to your project's `.mcp.json` or `~/.claude.json`:
 ```
 
 Or use the CLI command:
+
 ```bash
 claude mcp add gestalt --scope user
 ```
@@ -125,6 +126,7 @@ node dist/index.js --http --port=8000
 ```
 
 The server will start and display:
+
 ```
 Gestalt MCP Server running on http://localhost:8000
 MCP endpoint: POST http://localhost:8000/mcp
@@ -134,16 +136,16 @@ Transport: Streamable HTTP
 
 #### Connecting to HTTP Server
 
-** In Cursor - Add to ~/.cursor/mcp.json **
+**In Cursor** - Add to ~/.cursor/mcp.json
 
-```
+```json
 {
   "mcpServers": {
     "gestalt": {
       "url": "http://localhost:8000",
       "transport": "streamable-http"
-}
-}
+    }
+  }
 }
 ```
 
@@ -173,14 +175,16 @@ Transport: Streamable HTTP
 }
 ```
 
-
 #### Testing the Server
 
 **Health Check**:
+
 ```bash
 curl http://localhost:8000/health
 ```
+
 Response:
+
 ```json
 {
   "status": "ok",
@@ -191,10 +195,13 @@ Response:
 ```
 
 **Server Info**:
+
 ```bash
 curl http://localhost:8000/
 ```
+
 Response:
+
 ```json
 {
   "name": "Gestalt MCP Server",
